@@ -87,14 +87,12 @@ function injectSharedLayout(user) {
 
     const activePage = getActivePageName();
 
-    // 1. شريط القائمة الجانبية (Sidebar)
+    // 1. شريط القائمة الجانبية (Sidebar) - لنسخة الكمبيوتر
     const sidebarHTML = `
-        <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <aside class="sidebar" id="app-sidebar">
             <div class="logo-container">
                 <div class="logo-icon">A</div>
                 <div class="logo-text">ارتياتك</div>
-                <button class="modal-close mobile-menu-btn" id="close-sidebar-btn" style="margin-right: auto;">×</button>
             </div>
             <ul class="nav-links">
                 <li class="nav-item ${activePage === 'dashboard' ? 'active' : ''}"><a href="dashboard.html">📊 الرئيسية</a></li>
@@ -110,7 +108,6 @@ function injectSharedLayout(user) {
     const headerHTML = `
         <header class="header">
             <div class="header-right">
-                <button class="mobile-menu-btn" id="open-sidebar-btn">☰</button>
                 <h1 class="page-title" id="injected-page-title">${getPageTitleArabic(activePage)}</h1>
             </div>
             <div class="header-left">
@@ -157,8 +154,30 @@ function injectSharedLayout(user) {
         </header>
     `;
 
+    // 3. شريط التنقل السفلي (Bottom Nav) - للهواتف
+    const bottomNavHTML = `
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="bottom-nav-item ${activePage === 'dashboard' ? 'active' : ''}">
+                <div class="nav-icon-circle">🏠</div>
+                <span>الرئيسية</span>
+            </a>
+            <a href="economy.html" class="bottom-nav-item ${activePage === 'economy' ? 'active' : ''}">
+                <div class="nav-icon-circle">💰</div>
+                <span>الاقتصاد</span>
+            </a>
+            <a href="planners.html" class="bottom-nav-item ${activePage === 'planners' ? 'active' : ''}">
+                <div class="nav-icon-circle">📋</div>
+                <span>المخططات</span>
+            </a>
+            <a href="discussions.html" class="bottom-nav-item ${activePage === 'discussions' ? 'active' : ''}">
+                <div class="nav-icon-circle">💬</div>
+                <span>النقاشات</span>
+            </a>
+        </nav>
+    `;
+
     // حقن العناصر في بداية الـ Container
-    container.insertAdjacentHTML("afterbegin", sidebarHTML + headerHTML);
+    container.insertAdjacentHTML("afterbegin", sidebarHTML + headerHTML + bottomNavHTML);
 
     // تفعيل أحداث الواجهة المحقونة
     setupHeaderEvents(user);
@@ -240,23 +259,6 @@ function setupHeaderEvents(user) {
         notiDropdown.addEventListener("click", (e) => {
             e.stopPropagation(); // منع الإغلاق عند النقر بداخل القائمة
         });
-    }
-
-    // 4. منطق القائمة الجانبية للجوال
-    const sidebar = document.getElementById("app-sidebar");
-    const overlay = document.getElementById("sidebar-overlay");
-    const openBtn = document.getElementById("open-sidebar-btn");
-    const closeBtn = document.getElementById("close-sidebar-btn");
-
-    if (sidebar && overlay && openBtn) {
-        const toggleSidebar = () => {
-            sidebar.classList.toggle("active");
-            overlay.classList.toggle("active");
-        };
-
-        openBtn.addEventListener("click", toggleSidebar);
-        if (closeBtn) closeBtn.addEventListener("click", toggleSidebar);
-        overlay.addEventListener("click", toggleSidebar);
     }
 
     // طلب إذن الإشعارات للمتصفح

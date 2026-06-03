@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const payoutRevenueInput = document.getElementById("payout-revenue-input");
 
     const deleteTaskBtn = document.getElementById("delete-task-btn");
+    const editTaskBtn = document.getElementById("edit-task-btn");
 
     // الكانتينرز للأعمدة
     const containers = {
@@ -426,11 +427,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 addSubtaskBox.style.display = "none";
             }
 
-            // إظهار زر الحذف للأدمن فقط داخل التفاصيل
+            // إظهار أزرار الإدارة للأدمن فقط
             if (user.role === "admin") {
                 deleteTaskBtn.style.display = "block";
+                editTaskBtn.style.display = "block";
+                editTaskBtn.textContent = "تعديل البيانات ✏️";
             } else {
                 deleteTaskBtn.style.display = "none";
+                editTaskBtn.style.display = "none";
             }
 
             // مستمع للمهام الفرعية
@@ -721,4 +725,72 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // 11. تعديل بيانات المهمة (الأدمن فقط)
+    let isEditing = false;
+    if (editTaskBtn) {
+        editTaskBtn.addEventListener("click", async () => {
+            if (!activeTaskId) return;
+
+            const titleEl = document.getElementById("details-title");
+            const descEl = document.getElementById("details-desc");
+
+            if (!isEditing) {
+                // دخول وضع التعديل
+                const currentTitle = titleEl.textContent;
+                const currentDesc = descEl.textContent;
+
+                titleEl.innerHTML = `<input type="text" id="edit-title-input" class="form-control" value="${currentTitle}" style="width:100%;">`;
+                descEl.innerHTML = `<textarea id="edit-desc-input" class="form-control" style="width:100%; min-height:80px;">${currentDesc}</textarea>`;
+
+                editTaskBtn.textContent = "حفظ التعديلات ✅";
+                editTaskBtn.classList.remove("btn-secondary");
+                editTaskBtn.classList.add("btn-primary");
+                isEditing = true;
+            } else {
+                // حفظ التعديلات
+                const newTitle = document.getElementById("edit-title-input").value.trim();
+                const newDesc = document.getElementById("edit-desc-input").value.trim();
+
+                if (!newTitle) {
+                    showToast("العنوان لا يمكن أن يكون فارغاً!", "error");
+                    return;
+                }
+
+                try {
+                    await update(ref(db, `tasks/${activeTaskId}`), {
+                        title: newTitle,
+                        description: newDesc
+                    });
+
+                    titleEl.textContent = newTitle;
+                    descEl.textContent = newDesc;
+
+                    showToast("تم تحديث بيانات المشروع بنجاح", "success");
+                    logActivity(user.name, `عدّل بيانات مشروع: [${newTitle}]`);
+
+                    exitEditMode();
+                } catch (err) {
+                    console.error(err);
+                    showToast("فشل تحديث البيانات!", "error");
+                }
+            }
+        });
+    }
+
+    function exitEditMode() {
+        isEditing = false;
+        if (editTaskBtn) {
+            editTaskBtn.textContent = "تعديل البيانات ✏️";
+            editTaskBtn.classList.remove("btn-primary");
+            editTaskBtn.classList.add("btn-secondary");
+        }
+    }
+
+    // تأكد من الخروج من وضع التعديل عند إغلاق المودال
+    const originalCloseDetails = closeDetailsModal;
+    closeDetailsModal = function () {
+        exitEditMode();
+        originalCloseDetails();
+    };
 });
