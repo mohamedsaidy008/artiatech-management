@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,21 +8,23 @@
     <link rel="stylesheet" href="css/shared.css">
     <link rel="stylesheet" href="css/planners.css">
 </head>
+
 <body>
 
     <div class="app-container">
-        
+
         <main class="main-content" id="main-content-area">
-            
+
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
                 <h2 style="font-size: 18px; font-weight:700; margin:0;">📋 لوحة التخطيط والمهام الفنية (Kanban)</h2>
                 <!-- زر الإضافة يظهر للمدير فقط -->
-                <button class="btn btn-primary admin-only-block" id="open-create-task-modal-btn" style="display:none;">➕ إضافة فكرة/مشروع جديد</button>
+                <button class="btn btn-primary admin-only-block" id="open-create-task-modal-btn" style="display:none;">➕
+                    إضافة فكرة/مشروع جديد</button>
             </div>
 
             <!-- لوحة الكانبان الفورية -->
             <div class="kanban-board">
-                
+
                 <!-- 1. الأفكار والمسودات (Backlog) -->
                 <div class="kanban-column" data-status="backlog">
                     <div class="column-header">
@@ -74,11 +77,13 @@
             <form id="create-task-form" onsubmit="return false;">
                 <div class="form-group">
                     <label class="form-label" for="task-title-input">عنوان المشروع/المهمة</label>
-                    <input type="text" id="task-title-input" class="form-control" required placeholder="مثال: تصميم شعار ارتياتك">
+                    <input type="text" id="task-title-input" class="form-control" required
+                        placeholder="مثال: تصميم شعار ارتياتك">
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="task-desc-input">التفاصيل والوصف</label>
-                    <textarea id="task-desc-input" class="form-control" style="height:80px; resize:none;" required placeholder="اكتب تفاصيل واضحة للعمل المطلوبة..."></textarea>
+                    <textarea id="task-desc-input" class="form-control" style="height:80px; resize:none;" required
+                        placeholder="اكتب تفاصيل واضحة للعمل المطلوبة..."></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="task-deadline-input">تاريخ التسليم النهائي (Deadline)</label>
@@ -86,7 +91,8 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">تعيين المنفذين (اختر عضواً أو أكثر)</label>
-                    <div id="assignees-checkboxes-container" style="max-height:120px; overflow-y:auto; border:1px solid var(--border-color); padding:10px; border-radius:10px;">
+                    <div id="assignees-checkboxes-container"
+                        style="max-height:120px; overflow-y:auto; border:1px solid var(--border-color); padding:10px; border-radius:10px;">
                         <!-- يتم سرد الأعضاء هنا عبر JS -->
                     </div>
                 </div>
@@ -105,30 +111,35 @@
                 <h3 class="modal-title" id="details-task-title">تفاصيل المشروع</h3>
                 <button class="modal-close" id="close-details-btn">×</button>
             </div>
-            
+
             <div style="margin-bottom:15px;">
-                <p id="details-task-desc" style="font-size:14px; line-height:1.6; color:var(--text-main); margin-bottom:10px;"></p>
+                <p id="details-task-desc"
+                    style="font-size:14px; line-height:1.6; color:var(--text-main); margin-bottom:10px;"></p>
                 <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-secondary);">
-                    <span>📅 تاريخ التسليم: <strong id="details-task-deadline" style="color:var(--accent-gold);"></strong></span>
+                    <span>📅 تاريخ التسليم: <strong id="details-task-deadline"
+                            style="color:var(--accent-gold);"></strong></span>
                     <span>👥 المنفذون: <strong id="details-task-executors"></strong></span>
                 </div>
             </div>
 
             <!-- قسم المهام الفرعية -->
             <div class="subtasks-list-panel">
-                <h4 style="font-size:14px; font-weight:700; display:flex; justify-content:space-between; align-items:center;">
+                <h4
+                    style="font-size:14px; font-weight:700; display:flex; justify-content:space-between; align-items:center;">
                     <span>📝 المهام الفرعية لنسبة الإنجاز</span>
                     <span id="subtasks-progress" style="font-size:12px; color:var(--accent-cyan);">0%</span>
                 </h4>
-                
+
                 <div id="subtasks-container">
                     <!-- قائمة التشيك بوكس هنا -->
                 </div>
 
                 <!-- إضافة مهمة فرعية (متاحة للمنفذين فقط) -->
                 <div id="add-subtask-action-box" style="display:none; gap:10px; margin-top:10px;">
-                    <input type="text" id="new-subtask-title" class="form-control" style="flex-grow:1; padding:8px 12px; font-size:13px;" placeholder="أضف مهمة فرعية جديدة...">
-                    <button class="btn btn-secondary" id="save-subtask-btn" style="padding:8px 15px; font-size:13px;">إضافة</button>
+                    <input type="text" id="new-subtask-title" class="form-control"
+                        style="flex-grow:1; padding:8px 12px; font-size:13px;" placeholder="أضف مهمة فرعية جديدة...">
+                    <button class="btn btn-secondary" id="save-subtask-btn"
+                        style="padding:8px 15px; font-size:13px;">إضافة</button>
                 </div>
             </div>
 
@@ -139,12 +150,17 @@
                     <div class="noti-empty">لا توجد رسائل بعد، ابدأ النقاش!</div>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="chat-input" class="form-control" style="flex-grow:1; padding:8px 12px; font-size:13px;" placeholder="اكتب تعليقاً أو استفساراً...">
-                    <button class="btn btn-primary" id="send-chat-btn" style="padding:8px 15px; font-size:13px;">إرسال</button>
+                    <input type="text" id="chat-input" class="form-control"
+                        style="flex-grow:1; padding:8px 12px; font-size:13px;"
+                        placeholder="اكتب تعليقاً أو استفساراً...">
+                    <button class="btn btn-primary" id="send-chat-btn"
+                        style="padding:8px 15px; font-size:13px;">إرسال</button>
                 </div>
             </div>
 
-            <div class="modal-footer">
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-danger admin-only-block" id="delete-task-btn"
+                    style="display:none; padding: 8px 15px; font-size: 13px;">حذف المشروع نهائياً 🗑️</button>
                 <button type="button" class="btn btn-secondary" id="close-details-footer-btn">إغلاق النافذة</button>
             </div>
         </div>
@@ -159,15 +175,18 @@
             </div>
             <form id="payout-form" onsubmit="return false;">
                 <p style="font-size:13px; color:var(--text-secondary); margin-bottom:15px;">
-                    يرجى إدخال القيمة المالية الإجمالية المستلمة ليقوم النظام بتوزيع الـ 50% لمنفذي المشروع وتغذية الصناديق فورياً.
+                    يرجى إدخال القيمة المالية الإجمالية المستلمة ليقوم النظام بتوزيع الـ 50% لمنفذي المشروع وتغذية
+                    الصناديق فورياً.
                 </p>
                 <div class="form-group">
                     <label class="form-label" for="payout-revenue-input">قيمة المشروع الكلية (بالدينار)</label>
-                    <input type="number" id="payout-revenue-input" class="form-control" required placeholder="0.00" step="0.01">
+                    <input type="number" id="payout-revenue-input" class="form-control" required placeholder="0.00"
+                        step="0.01">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="cancel-payout-btn">إلغاء</button>
-                    <button type="submit" class="btn btn-primary" id="confirm-payout-btn">تأكيد الإغلاق المالي والتوزيع</button>
+                    <button type="submit" class="btn btn-primary" id="confirm-payout-btn">تأكيد الإغلاق المالي
+                        والتوزيع</button>
                 </div>
             </form>
         </div>
@@ -179,4 +198,5 @@
     <script type="module" src="js/auth-guard.js"></script>
     <script type="module" src="js/planners.js"></script>
 </body>
+
 </html>
