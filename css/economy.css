@@ -1,0 +1,125 @@
+/* تصميم صفحة الاقتصاد */
+.economy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+    .economy-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.balance-showcase {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(20, 27, 45, 0.8) 0%, rgba(10, 15, 30, 0.9) 100%);
+    border: 1px solid var(--border-color);
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+}
+
+.bal-box {
+    text-align: center;
+}
+
+.bal-title {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.bal-amount {
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.bal-amount.cyan { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0, 242, 254, 0.2); }
+.bal-amount.gold { color: var(--accent-gold); text-shadow: 0 0 10px rgba(247, 181, 0, 0.2); }
+
+.ledger-card {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+/* بطاقات المعاملات */
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.badge-deposit {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.badge-withdraw {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.badge-solidarity {
+    background: rgba(0, 242, 254, 0.15);
+    color: var(--accent-cyan);
+}
+
+.badge-expense {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+/* واجهة إدخال النسب الشهرية */
+.allocation-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.01);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.allocation-row .member-name {
+    width: 120px;
+    font-weight: 700;
+}
+
+.allocation-row input[type="number"] {
+    width: 90px;
+}
+
+.allocation-row input[type="text"] {
+    flex-grow: 1;
+}
+
+/* طلبات السحب المعلقة */
+.request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.request-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.request-actions {
+    display: flex;
+    gap: 8px;
+}
