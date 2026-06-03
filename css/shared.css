@@ -54,10 +54,46 @@ body {
     display: grid;
     grid-template-columns: 260px 1fr;
     grid-template-rows: 70px 1fr;
-    grid-template-areas: 
+    grid-template-areas:
         "sidebar header"
         "sidebar main";
     min-height: 100vh;
+}
+
+@media (max-width: 1024px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "header"
+            "main";
+    }
+
+    .sidebar {
+        position: fixed;
+        right: -280px;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        transition: right 0.3s ease;
+        z-index: 2000;
+    }
+
+    .sidebar.active {
+        right: 0;
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1999;
+        display: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
 }
 
 /* القائمة الجانبية (Sidebar) */
@@ -102,6 +138,7 @@ body {
     font-weight: 700;
     background: linear-gradient(45deg, var(--text-main), var(--accent-cyan));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -149,6 +186,30 @@ body {
     z-index: 99;
 }
 
+/* زر القائمة للهواتف */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    .header {
+        padding: 0 15px;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .page-title {
+        font-size: 18px;
+    }
+}
+
 .header-right {
     display: flex;
     align-items: center;
@@ -159,6 +220,22 @@ body {
     display: flex;
     align-items: center;
     gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .header-left {
+        gap: 10px;
+    }
+
+    .availability-selector span:last-child,
+    .user-info {
+        display: none;
+    }
+
+    .user-profile-menu {
+        padding-right: 0;
+        border: none;
+    }
 }
 
 .page-title {
@@ -187,9 +264,20 @@ body {
     display: inline-block;
 }
 
-.status-dot.online { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
-.status-dot.busy { background-color: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
-.status-dot.away { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+.status-dot.online {
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.status-dot.busy {
+    background-color: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+}
+
+.status-dot.away {
+    background-color: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+}
 
 .status-menu {
     position: absolute;
@@ -199,7 +287,7 @@ body {
     border-radius: 12px;
     padding: 8px 0;
     min-width: 150px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     display: none;
     z-index: 1000;
 }
@@ -271,7 +359,7 @@ body {
     width: 320px;
     max-height: 400px;
     overflow-y: auto;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     display: none;
     z-index: 1000;
 }
@@ -409,6 +497,12 @@ body {
     grid-area: main;
     padding: 30px;
     overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+    }
 }
 
 /* الكروت والتصميم الزجاجي */
@@ -551,7 +645,7 @@ select.form-control {
     padding: 16px 20px;
     color: var(--text-main);
     font-size: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -565,15 +659,24 @@ select.form-control {
         transform: translateX(-100%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
     }
 }
 
-.toast-success { border-color: #10b981; }
-.toast-error { border-color: #ef4444; }
-.toast-info { border-color: var(--accent-cyan); }
+.toast-success {
+    border-color: #10b981;
+}
+
+.toast-error {
+    border-color: #ef4444;
+}
+
+.toast-info {
+    border-color: var(--accent-cyan);
+}
 
 /* كود شاشات المودال (Popup Modal) */
 .modal-overlay {
@@ -582,7 +685,7 @@ select.form-control {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -605,7 +708,7 @@ select.form-control {
     width: 90%;
     max-width: 500px;
     padding: 24px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
     transform: translateY(20px);
     transition: transform 0.3s ease;
 }

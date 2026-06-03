@@ -21,13 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "dashboard.html";
             return;
         }
-        
+
         // 3. بناء وحقن واجهة شريط التنقل العلوي والجانبي تلقائياً في الصفحات
         injectSharedLayout(currentUser);
-        
+
         // 4. تشغيل مستمع الإشعارات الحية
         initNotificationListener(currentUser.id);
-        
+
         // 5. تحديث حالة الاتصال الافتراضية
         updateStatusIndicator(currentUser.status || "online");
     }
@@ -63,7 +63,7 @@ export function logout() {
 function initTheme() {
     const savedTheme = localStorage.getItem("theme") || "dark";
     document.documentElement.setAttribute("data-theme", savedTheme);
-    
+
     // تحديث زر التبديل إذا كان موجوداً في الصفحة
     setTimeout(() => {
         const toggleBtn = document.getElementById("theme-toggle-btn");
@@ -89,10 +89,12 @@ function injectSharedLayout(user) {
 
     // 1. شريط القائمة الجانبية (Sidebar)
     const sidebarHTML = `
-        <aside class="sidebar">
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <aside class="sidebar" id="app-sidebar">
             <div class="logo-container">
                 <div class="logo-icon">A</div>
                 <div class="logo-text">ارتياتك</div>
+                <button class="modal-close mobile-menu-btn" id="close-sidebar-btn" style="margin-right: auto;">×</button>
             </div>
             <ul class="nav-links">
                 <li class="nav-item ${activePage === 'dashboard' ? 'active' : ''}"><a href="dashboard.html">📊 الرئيسية</a></li>
@@ -108,6 +110,7 @@ function injectSharedLayout(user) {
     const headerHTML = `
         <header class="header">
             <div class="header-right">
+                <button class="mobile-menu-btn" id="open-sidebar-btn">☰</button>
                 <h1 class="page-title" id="injected-page-title">${getPageTitleArabic(activePage)}</h1>
             </div>
             <div class="header-left">
@@ -214,7 +217,7 @@ function setupHeaderEvents(user) {
                 // تحديث الجلسة المحلية
                 user.status = newStatus;
                 setCurrentUser(user);
-                
+
                 // تسجيل لوق العمليات
                 logActivity(user.name, `غير حالته إلى [${newStatus === 'online' ? 'متاح' : newStatus === 'busy' ? 'مشغول' : 'غير متوفر'}]`);
             });
@@ -237,6 +240,23 @@ function setupHeaderEvents(user) {
         notiDropdown.addEventListener("click", (e) => {
             e.stopPropagation(); // منع الإغلاق عند النقر بداخل القائمة
         });
+    }
+
+    // 4. منطق القائمة الجانبية للجوال
+    const sidebar = document.getElementById("app-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    const openBtn = document.getElementById("open-sidebar-btn");
+    const closeBtn = document.getElementById("close-sidebar-btn");
+
+    if (sidebar && overlay && openBtn) {
+        const toggleSidebar = () => {
+            sidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        };
+
+        openBtn.addEventListener("click", toggleSidebar);
+        if (closeBtn) closeBtn.addEventListener("click", toggleSidebar);
+        overlay.addEventListener("click", toggleSidebar);
     }
 
     // طلب إذن الإشعارات للمتصفح
@@ -279,7 +299,7 @@ function initNotificationListener(userId) {
         const notiArray = Object.keys(notis).map(key => ({
             id: key,
             ...notis[key]
-        })).sort((a,b) => b.timestamp - a.timestamp);
+        })).sort((a, b) => b.timestamp - a.timestamp);
 
         const unreadCount = notiArray.filter(n => !n.read).length;
         if (badge) {
@@ -300,7 +320,7 @@ function initNotificationListener(userId) {
                     <div class="noti-text">${noti.message}</div>
                     <div class="noti-time">${new Date(noti.timestamp).toLocaleTimeString("ar-EG")} - ${new Date(noti.timestamp).toLocaleDateString("ar-EG")}</div>
                 `;
-                
+
                 // النقر يعلم الإشعار كمقروء
                 notiItem.addEventListener("click", () => {
                     update(ref(db, `notifications/${userId}/${noti.id}`), { read: true });

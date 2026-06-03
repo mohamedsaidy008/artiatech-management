@@ -9,16 +9,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const myWalletBal = document.getElementById("my-wallet-balance");
     const opexFundBal = document.getElementById("opex-fund-balance");
     const solidarityPoolBal = document.getElementById("solidarity-pool-balance");
-    
+
     const adminOnlyBlocks = document.querySelectorAll(".admin-only-block");
     const unpaidMonthsList = document.getElementById("unpaid-months-list");
     const allocationMonthInput = document.getElementById("allocation-month");
     const membersAllocContainer = document.getElementById("members-allocation-container");
-    
+
     const triggerDistBtn = document.getElementById("trigger-distribution-btn");
     const saveAllocationsBtn = document.getElementById("save-allocations-btn");
     const saveExpenseBtn = document.getElementById("save-expense-btn");
-    
+
     const opexExpenseForm = document.getElementById("opex-expense-form");
     const expenseAmountInput = document.getElementById("expense-amount");
     const expenseDescInput = document.getElementById("expense-desc");
@@ -26,11 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const opexDepositForm = document.getElementById("opex-deposit-form");
     const depositAmountInput = document.getElementById("deposit-amount");
     const depositDescInput = document.getElementById("deposit-desc");
-    
+
     const withdrawForm = document.getElementById("withdrawal-request-form");
     const withdrawAmountInput = document.getElementById("withdraw-amount");
     const pendingWithdrawalsList = document.getElementById("pending-withdrawals-list");
-    
+
     const ledgerTableBody = document.getElementById("financial-ledger-body");
     const exportLedgerBtn = document.getElementById("export-ledger-btn");
 
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const usersSnapshot = await get(ref(db, "users"));
             allUsers = usersSnapshot.val() || {};
-            
+
             const month = allocationMonthInput.value;
             const allocSnapshot = await get(ref(db, `monthly_allocations/${month}`));
             const savedAlloc = allocSnapshot.val() || {};
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 await set(ref(db, `monthly_allocations/${month}`), allocations);
-                
+
                 // إضافة الشهر إلى قائمة الأشهر غير المدفوعة إذا لم يكن موجوداً
                 const unpaidSnapshot = await get(ref(db, "unpaid_months"));
                 let unpaidList = unpaidSnapshot.val() || [];
@@ -171,21 +171,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const desc = expenseDescInput.value.trim();
 
             if (isNaN(amount) || amount <= 0 || !desc) {
-                showToast("يرجى إدخال قيم صحيحة!", "error");
+                showToast("يرجى إدخال مبلغ أكبر من صفر ووصف صحيح!", "error");
                 return;
             }
 
             try {
                 const fundsSnapshot = await get(ref(db, "funds"));
                 const funds = fundsSnapshot.val() || { operating_fund: 0, solidarity_pool: 0 };
-                const currentOp = funds.operating_fund || 0;
+                const currentOp = Math.round((funds.operating_fund || 0) * 100) / 100;
 
                 if (amount > currentOp) {
                     showToast("رصيد الصندوق التشغيلي غير كافٍ لإتمام العملية!", "error");
                     return;
                 }
 
-                const newOp = currentOp - amount;
+                const newOp = Math.round((currentOp - amount) * 100) / 100;
                 await update(ref(db, "funds"), { operating_fund: newOp });
 
                 // إضافة معاملة مالية
@@ -255,14 +255,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const amount = parseFloat(withdrawAmountInput.value);
 
             if (isNaN(amount) || amount <= 0) {
-                showToast("الرجاء إدخال مبلغ صحيح!", "error");
+                showToast("الرجاء إدخال مبلغ أكبر من صفر!", "error");
                 return;
             }
 
             try {
                 const userSnapshot = await get(ref(db, `users/${user.id}`));
                 const dbUser = userSnapshot.val() || {};
-                const myBal = dbUser.balance || 0;
+                const myBal = Math.round((dbUser.balance || 0) * 100) / 100;
 
                 if (amount > myBal) {
                     showToast("المبلغ المطلوب أكبر من رصيدك المتاح!", "error");
@@ -313,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const div = document.createElement("div");
             div.className = "request-item";
-            
+
             let actionHTML = "";
             if (user.role === "admin") {
                 actionHTML = `
@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.addEventListener("click", async () => {
                     const id = btn.getAttribute("data-id");
                     const targetReq = reqs[id];
-                    
+
                     try {
                         const targetUserSnap = await get(ref(db, `users/${targetReq.userId}`));
                         const targetUserData = targetUserSnap.val() || {};
@@ -357,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         await update(ref(db, `users/${targetReq.userId}`), { balance: currentBal - targetReq.amount });
                         // تحديث حالة الطلب
                         await update(ref(db, `withdrawal_requests/${id}`), { status: "approved" });
-                        
+
                         // تسجيل معاملة السحب
                         const transRef = push(ref(db, "transactions"));
                         await set(transRef, {
@@ -382,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.addEventListener("click", async () => {
                     const id = btn.getAttribute("data-id");
                     const targetReq = reqs[id];
-                    
+
                     try {
                         await update(ref(db, `withdrawal_requests/${id}`), { status: "rejected" });
                         showToast("تم رفض طلب السحب المالي وإلغاؤه.", "info");
@@ -407,12 +407,12 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const transArray = Object.keys(trans).map(key => trans[key]).sort((a,b) => b.timestamp - a.timestamp);
+        const transArray = Object.keys(trans).map(key => trans[key]).sort((a, b) => b.timestamp - a.timestamp);
 
         ledgerTableBody.innerHTML = "";
         transArray.forEach(t => {
             const tr = document.createElement("tr");
-            
+
             let badgeClass = "badge-deposit";
             let typeText = "إيداع أرباح";
             if (t.type === "withdraw") { badgeClass = "badge-withdraw"; typeText = "سحب نقدي"; }
@@ -441,13 +441,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            const confirmDist = confirm("⚠️ هل أنت متأكد من توزيع كافة مبالغ محفظة التكافل الآن؟ سيتم تصفير المحفظة وتحديث أرصدة الأعضاء ولا يمكن التراجع عن هذه العملية يدوياً بسهولة.");
+            if (!confirmDist) return;
+
             try {
                 // قفل الزر لمنع الضغط المتكرر
                 triggerDistBtn.disabled = true;
                 triggerDistBtn.textContent = "جاري الحساب والتوزيع...";
 
                 const fundsSnap = await get(ref(db, "funds"));
-                const currentPool = fundsSnap.val().solidarity_pool || 0;
+                const currentPool = Math.round((fundsSnap.val().solidarity_pool || 0) * 100) / 100;
 
                 if (currentPool <= 0) {
                     showToast("محفظة التكافل فارغة حالياً (0 دينار)، لا يوجد شيء لتوزيعه!", "error");
@@ -459,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 1. جلب بيانات المهام والمشاريع المسلمة غير الموزعة للتكافل
                 const tasksSnapshot = await get(ref(db, "tasks"));
                 const tasks = tasksSnapshot.val() || {};
-                
+
                 // جلب المشاريع المكتملة المدفوعة التي لم تُوزع حصتها من البنك
                 const unpaidTasks = Object.values(tasks).filter(t => t.status === "completed_paid" && t.solidarity_share > 0 && t.solidarity_distributed !== true);
 
@@ -480,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 Object.keys(users).forEach(uid => {
                     let totalShare = 0;
                     let monthsCount = 0;
-                    
+
                     unpaidMonths.forEach(m => {
                         if (monthlyAllocations[m] && monthlyAllocations[m][uid]) {
                             totalShare += monthlyAllocations[m][uid].share;
@@ -494,12 +497,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // 5. معالجة وتوزيع كل مشروع على حدة لتطبيق الاستبعاد الفوري لمنفذيه
                 let totalDistributed = 0;
-                
+
                 if (unpaidTasks.length > 0) {
                     for (const task of unpaidTasks) {
                         const B_i = task.solidarity_share || 0; // الـ 20% الخاصة بالمشروع
                         const executors = task.executors || [];
-                        
+
                         // المستحقون للـ 20% (بقية الأعضاء غير المنفذين)
                         const eligibleMembers = Object.keys(users).filter(uid => !executors.includes(uid));
 
@@ -586,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 showToast(`تم توزيع التكافل بنجاح بقيمة إجمالية [${totalDistributed.toFixed(2)} د.إ] وتصفير الشهور التراكمية!`, "success");
                 logActivity(user.name, `وزّع عوائد محفظة التكافل بقيمة [${totalDistributed.toFixed(2)} د.إ] على الأعضاء وصفر الأشهر التراكمية.`);
-                
+
                 // إعادة تحميل الواجهة
                 unpaidMonths = [];
                 if (unpaidMonthsList) unpaidMonthsList.textContent = "لا توجد أشهر متراكمة";
@@ -613,7 +616,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                const transArray = Object.keys(trans).map(key => trans[key]).sort((a,b) => b.timestamp - a.timestamp);
+                const transArray = Object.keys(trans).map(key => trans[key]).sort((a, b) => b.timestamp - a.timestamp);
 
                 // إعداد محتوى CSV
                 let csvContent = "\ufeff"; // BOM لدعم اللغة العربية في Excel

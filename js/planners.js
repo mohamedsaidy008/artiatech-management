@@ -286,9 +286,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const revenue = parseFloat(payoutRevenueInput.value);
 
         if (isNaN(revenue) || revenue <= 0 || !pendingPayoutTaskId) {
-            showToast("يرجى إدخال ميزانية صحيحة!", "error");
+            showToast("يرجى إدخال ميزانية كليّة أكبر من صفر!", "error");
             return;
         }
+
+        const confirmPayout = confirm(`⚠️ هل أنت متأكد من إغلاق المشروع مالياً بقيمة [${revenue} د.إ]؟\nسيتم توزيع الأرباح فورياً (50% منفذين، 30% تشغيلي، 20% تكافل) ولا يمكن التراجع.`);
+        if (!confirmPayout) return;
 
         try {
             const taskRef = ref(db, `tasks/${pendingPayoutTaskId}`);
