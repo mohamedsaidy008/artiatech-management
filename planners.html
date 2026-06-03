@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المخططات والمهام - منظومة استوديو ارتياتك</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/planners.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <main class="main-content" id="main-content-area">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <h2 style="font-size: 18px; font-weight:700; margin:0;">📋 لوحة التخطيط والمهام الفنية (Kanban)</h2>
+                <!-- زر الإضافة يظهر للمدير فقط -->
+                <button class="btn btn-primary admin-only-block" id="open-create-task-modal-btn" style="display:none;">➕ إضافة فكرة/مشروع جديد</button>
+            </div>
+
+            <!-- لوحة الكانبان الفورية -->
+            <div class="kanban-board">
+                
+                <!-- 1. الأفكار والمسودات (Backlog) -->
+                <div class="kanban-column" data-status="backlog">
+                    <div class="column-header">
+                        <span class="column-title">💡 الأفكار والمسودات</span>
+                        <span class="column-badge" id="badge-backlog">0</span>
+                    </div>
+                    <div class="cards-container" id="container-backlog"></div>
+                </div>
+
+                <!-- 2. قيد التنفيذ (In Progress) -->
+                <div class="kanban-column" data-status="in_progress">
+                    <div class="column-header">
+                        <span class="column-title">⚙️ قيد التنفيذ والعمل</span>
+                        <span class="column-badge" id="badge-in_progress">0</span>
+                    </div>
+                    <div class="cards-container" id="container-in_progress"></div>
+                </div>
+
+                <!-- 3. المراجعة والتعديل (Review) -->
+                <div class="kanban-column" data-status="review">
+                    <div class="column-header">
+                        <span class="column-title">🔍 المراجعة والتدقيق</span>
+                        <span class="column-badge" id="badge-review">0</span>
+                    </div>
+                    <div class="cards-container" id="container-review"></div>
+                </div>
+
+                <!-- 4. مكتمل ومستلم مالياً (Completed & Paid) -->
+                <div class="kanban-column" data-status="completed_paid">
+                    <div class="column-header">
+                        <span class="column-title">✅ مكتمل ومستلم مالياً</span>
+                        <span class="column-badge" id="badge-completed_paid">0</span>
+                    </div>
+                    <div class="cards-container" id="container-completed_paid"></div>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- 1. مودال إنشاء مهمة جديدة (للأدمن) -->
+    <div class="modal-overlay" id="create-task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">💡 إضافة مشروع/فكرة جديدة للمخططات</h3>
+                <button class="modal-close" id="close-create-task-btn">×</button>
+            </div>
+            <form id="create-task-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label class="form-label" for="task-title-input">عنوان المشروع/المهمة</label>
+                    <input type="text" id="task-title-input" class="form-control" required placeholder="مثال: تصميم شعار ارتياتك">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="task-desc-input">التفاصيل والوصف</label>
+                    <textarea id="task-desc-input" class="form-control" style="height:80px; resize:none;" required placeholder="اكتب تفاصيل واضحة للعمل المطلوبة..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="task-deadline-input">تاريخ التسليم النهائي (Deadline)</label>
+                    <input type="date" id="task-deadline-input" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تعيين المنفذين (اختر عضواً أو أكثر)</label>
+                    <div id="assignees-checkboxes-container" style="max-height:120px; overflow-y:auto; border:1px solid var(--border-color); padding:10px; border-radius:10px;">
+                        <!-- يتم سرد الأعضاء هنا عبر JS -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-create-task-btn">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" id="save-task-btn">إعتماد المشروع</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. مودال تفاصيل المهمة (شامل المهام الفرعية والدردشة) -->
+    <div class="modal-overlay" id="task-details-modal">
+        <div class="modal-content" style="max-width:600px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="details-task-title">تفاصيل المشروع</h3>
+                <button class="modal-close" id="close-details-btn">×</button>
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <p id="details-task-desc" style="font-size:14px; line-height:1.6; color:var(--text-main); margin-bottom:10px;"></p>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-secondary);">
+                    <span>📅 تاريخ التسليم: <strong id="details-task-deadline" style="color:var(--accent-gold);"></strong></span>
+                    <span>👥 المنفذون: <strong id="details-task-executors"></strong></span>
+                </div>
+            </div>
+
+            <!-- قسم المهام الفرعية -->
+            <div class="subtasks-list-panel">
+                <h4 style="font-size:14px; font-weight:700; display:flex; justify-content:space-between; align-items:center;">
+                    <span>📝 المهام الفرعية لنسبة الإنجاز</span>
+                    <span id="subtasks-progress" style="font-size:12px; color:var(--accent-cyan);">0%</span>
+                </h4>
+                
+                <div id="subtasks-container">
+                    <!-- قائمة التشيك بوكس هنا -->
+                </div>
+
+                <!-- إضافة مهمة فرعية (متاحة للمنفذين فقط) -->
+                <div id="add-subtask-action-box" style="display:none; gap:10px; margin-top:10px;">
+                    <input type="text" id="new-subtask-title" class="form-control" style="flex-grow:1; padding:8px 12px; font-size:13px;" placeholder="أضف مهمة فرعية جديدة...">
+                    <button class="btn btn-secondary" id="save-subtask-btn" style="padding:8px 15px; font-size:13px;">إضافة</button>
+                </div>
+            </div>
+
+            <!-- قسم النقاش الخاص بالمهمة -->
+            <div class="modal-chat-section">
+                <h4 style="font-size:14px; font-weight:700; margin-bottom:10px;">💬 نقاش وتعليقات المشروع الحية</h4>
+                <div class="chat-box" id="task-chat-box">
+                    <div class="noti-empty">لا توجد رسائل بعد، ابدأ النقاش!</div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="chat-input" class="form-control" style="flex-grow:1; padding:8px 12px; font-size:13px;" placeholder="اكتب تعليقاً أو استفساراً...">
+                    <button class="btn btn-primary" id="send-chat-btn" style="padding:8px 15px; font-size:13px;">إرسال</button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close-details-footer-btn">إغلاق النافذة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. مودال الدفعة المالية (يظهر عند نقل المهمة للمكتمل والمستلم مالياً) -->
+    <div class="modal-overlay" id="payout-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🎉 تهانينا على تسليم المشروع!</h3>
+                <button class="modal-close" id="close-payout-modal-btn">×</button>
+            </div>
+            <form id="payout-form" onsubmit="return false;">
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:15px;">
+                    يرجى إدخال القيمة المالية الإجمالية المستلمة ليقوم النظام بتوزيع الـ 50% لمنفذي المشروع وتغذية الصناديق فورياً.
+                </p>
+                <div class="form-group">
+                    <label class="form-label" for="payout-revenue-input">قيمة المشروع الكلية (بالدينار)</label>
+                    <input type="number" id="payout-revenue-input" class="form-control" required placeholder="0.00" step="0.01">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-payout-btn">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" id="confirm-payout-btn">تأكيد الإغلاق المالي والتوزيع</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- التوست للإشعارات السريعة -->
+    <div class="toast-container"></div>
+
+    <script type="module" src="js/auth-guard.js"></script>
+    <script type="module" src="js/planners.js"></script>
+</body>
+</html>

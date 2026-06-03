@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النقاشات - منظومة استوديو ارتياتك</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/discussions.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <main class="main-content" id="main-content-area">
+            
+            <div class="discussions-container">
+                
+                <!-- عمود اختيار المشاريع الأيمن -->
+                <aside class="discussions-sidebar">
+                    <h3 class="sidebar-title">📁 غرف مشاريع الاستوديو</h3>
+                    <div id="project-chats-list" style="display:flex; flex-direction:column; gap:8px;">
+                        <div class="noti-empty" style="font-size:12px;">جاري جلب المشاريع...</div>
+                    </div>
+                </aside>
+
+                <!-- نافذة الدردشة الرئيسية اليسرى -->
+                <section class="chat-window" id="chat-window-pane">
+                    <!-- الحالة الافتراضية (لم يتم اختيار مشروع) -->
+                    <div class="chat-empty-state" id="chat-empty-view">
+                        <div class="chat-empty-icon">💬</div>
+                        <h3 style="font-weight:700; color:var(--text-main);">ابدأ النقاش الفني والتنسيق</h3>
+                        <p style="font-size:13px; max-width:320px;">الرجاء اختيار أحد غرف مشاريع الاستوديو النشطة من القائمة اليمنى للبدء بالتواصل اللحظي.</p>
+                    </div>
+
+                    <!-- واجهة الدردشة النشطة (مخفية افتراضياً) -->
+                    <div id="chat-active-view" style="display:none; flex-direction:column; height:100%;">
+                        <div class="chat-window-header">
+                            <span class="chat-project-title" id="chat-project-title-label">اسم المشروع المختار</span>
+                            <span id="chat-project-status-label" class="badge badge-solidarity" style="font-size:10px;">قيد التنفيذ</span>
+                        </div>
+
+                        <div class="chat-window-body" id="main-chat-body">
+                            <!-- الرسائل الحية تظهر هنا -->
+                        </div>
+
+                        <div class="chat-window-footer">
+                            <input type="text" id="main-chat-input" class="form-control" style="flex-grow:1;" placeholder="اكتب رسالتك هنا للتواصل مع منفذي المشروع...">
+                            <button class="btn btn-primary" id="main-chat-send-btn">إرسال</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- التوست للإشعارات السريعة -->
+    <div class="toast-container"></div>
+
+    <script type="module" src="js/auth-guard.js"></script>
+    <script type="module" src="js/discussions.js"></script>
+</body>
+</html>

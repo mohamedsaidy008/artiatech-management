@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاقتصاد - منظومة استوديو ارتياتك</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/economy.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <main class="main-content" id="main-content-area">
+            
+            <!-- لوحة استعراض الأرصدة الكبرى -->
+            <div class="balance-showcase">
+                <div class="bal-box">
+                    <div class="bal-title">رصيدي الشخصي القابل للسحب</div>
+                    <div class="bal-amount cyan" id="my-wallet-balance">0.00 د.إ</div>
+                </div>
+                <div class="bal-box" style="border-right: 1px solid var(--border-color); border-left: 1px solid var(--border-color); padding: 0 40px;">
+                    <div class="bal-title">الصندوق التشغيلي للاستوديو</div>
+                    <div class="bal-amount gold" id="opex-fund-balance">0.00 د.إ</div>
+                </div>
+                <div class="bal-box">
+                    <div class="bal-title">محفظة التكافل والمساهمة</div>
+                    <div class="bal-amount cyan" id="solidarity-pool-balance">0.00 د.إ</div>
+                </div>
+            </div>
+
+            <!-- شبكة التحكم المالية -->
+            <div class="economy-grid">
+                
+                <!-- القسم الأيسر: التحكم والعمليات (إدخالات ونماذج) -->
+                <div>
+                    
+                    <!-- 1. لوحة توزيع التكافل والترحيل (أدمن فقط) -->
+                    <div class="glass-card admin-only-block" id="solidarity-dist-panel" style="display:none;">
+                        <h2 style="font-size: 16px; font-weight:700; margin-bottom:15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">🤝 صرف وتوزيع محفظة التكافل</h2>
+                        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:15px;">
+                            سيقوم النظام بجمع المبالغ الموجودة في محفظة التكافل وتوزيعها على الأعضاء بناءً على النسب المحددة للشهور غير المدفوعة وتطبيق ترحيل الشهور الجافة.
+                        </p>
+                        <div class="form-group">
+                            <span class="form-label">الأشهر الجافة التراكمية المستحقة:</span>
+                            <span id="unpaid-months-list" style="font-weight:700; color:var(--accent-gold);">لا توجد أشهر متراكمة</span>
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;" id="trigger-distribution-btn">توزيع مبالغ محفظة التكافل الآن</button>
+                    </div>
+
+                    <!-- 2. لوحة تحديد النسب الشهرية (أدمن فقط) -->
+                    <div class="glass-card admin-only-block" id="monthly-shares-panel" style="display:none;">
+                        <h2 style="font-size: 16px; font-weight:700; margin-bottom:15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📊 تحديد نسب المساهمة للشهر الجديد</h2>
+                        
+                        <div class="form-group" style="flex-direction:row; justify-content:space-between; align-items:center;">
+                            <label class="form-label" for="allocation-month" style="margin-bottom:0;">شهر التقييم:</label>
+                            <input type="month" id="allocation-month" class="form-control" style="padding: 6px 12px; width:180px;">
+                        </div>
+
+                        <div id="members-allocation-container">
+                            <!-- يتم تعبئة الأعضاء هنا تلقائياً بـ JS -->
+                        </div>
+
+                        <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="save-allocations-btn">حفظ واعتماد نسب الشهر</button>
+                    </div>
+
+                    <!-- 3. تسجيل مصروفات الصندوق التشغيلي (أدمن فقط) -->
+                    <div class="glass-card admin-only-block" id="opex-expense-panel" style="display:none;">
+                        <h2 style="font-size: 16px; font-weight:700; margin-bottom:15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">💸 تسجيل مصروفات من الصندوق التشغيلي</h2>
+                        
+                        <form id="opex-expense-form" onsubmit="return false;">
+                            <div class="form-group">
+                                <label class="form-label" for="expense-amount">القيمة المصروفة (دينار)</label>
+                                <input type="number" id="expense-amount" class="form-control" required placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="expense-desc">البيان (سبب الصرف والتفاصيل)</label>
+                                <input type="text" id="expense-desc" class="form-control" required placeholder="مثال: شراء قلم تابلت واكوم أو اشتراك Adobe">
+                            </div>
+                            <button type="submit" class="btn btn-secondary" style="width:100%;" id="save-expense-btn">تسجيل وخصم المصروف</button>
+                        </form>
+                    </div>
+
+                    <!-- 4. تقديم طلب سحب مالي (للجميع) -->
+                    <div class="glass-card">
+                        <h2 style="font-size: 16px; font-weight:700; margin-bottom:15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📥 طلب سحب من الرصيد الشخصي</h2>
+                        
+                        <form id="withdrawal-request-form" onsubmit="return false;">
+                            <div class="form-group">
+                                <label class="form-label" for="withdraw-amount">المبلغ المطلوب سحبه (دينار)</label>
+                                <input type="number" id="withdraw-amount" class="form-control" required placeholder="0.00" step="0.01">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;" id="submit-withdraw-btn">تقديم طلب السحب</button>
+                        </form>
+                    </div>
+
+                    <!-- 5. طلبات السحب المعلقة (للجميع والموافقة للأدمن) -->
+                    <div class="glass-card">
+                        <h2 style="font-size: 16px; font-weight:700; margin-bottom:15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">⏳ طلبات السحب المعلقة</h2>
+                        <div id="pending-withdrawals-list">
+                            <div class="noti-empty">لا توجد طلبات سحب معلقة حالياً</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- القسم الأيمن: سجل المعاملات المالية الشامل -->
+                <div class="glass-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+                        <h2 style="font-size: 18px; font-weight:700; margin:0;">🧾 السجل المالي العام (Ledger)</h2>
+                        <button class="btn btn-secondary" id="export-ledger-btn" style="padding: 6px 12px; font-size:12px;">📥 تصدير CSV</button>
+                    </div>
+                    
+                    <div class="ledger-card table-responsive">
+                        <table class="custom-table" id="financial-ledger-table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>الطرف المستفيد</th>
+                                    <th>نوع المعاملة</th>
+                                    <th>القيمة</th>
+                                    <th>البيان والتفاصيل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="financial-ledger-body">
+                                <tr><td colspan="5" style="text-align:center;">جاري تحميل المعاملات المالية...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- التوست للإشعارات السريعة -->
+    <div class="toast-container"></div>
+
+    <script type="module" src="js/auth-guard.js"></script>
+    <script type="module" src="js/economy.js"></script>
+</body>
+</html>

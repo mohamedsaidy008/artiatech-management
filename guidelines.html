@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التعليمات - منظومة استوديو ارتياتك</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <style>
+        .guide-container {
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        .guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .guide-section {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .guide-section:last-child {
+            border-bottom: none;
+        }
+        .guide-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .guide-badge {
+            background: var(--active-item-bg);
+            color: var(--accent-cyan);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+        .guide-list {
+            padding-right: 20px;
+            margin-bottom: 20px;
+        }
+        .guide-list li {
+            margin-bottom: 10px;
+        }
+        .guide-highlight {
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+        .formula-box {
+            background: rgba(0, 242, 254, 0.05);
+            border: 1px dashed var(--accent-cyan);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: monospace;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <main class="main-content" id="main-content-area">
+            
+            <div class="guide-container glass-card">
+                
+                <div class="guide-header">
+                    <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 10px;">📖 دليل القواعد والمنظومة المالية للاستوديو</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">وثيقة مرجعية لشرح طريقة احتساب وتوزيع الأرباح والتعليمات العامة للأعضاء</p>
+                </div>
+
+                <!-- القسم الأول: تقسيم الأموال -->
+                <div class="guide-section">
+                    <h3 class="guide-title">
+                        <span>1. المحافظ المالية وقواعد تقسيم المشاريع</span>
+                        <span class="guide-badge">تلقائي</span>
+                    </h3>
+                    <p>عند اكتمال أي مشروع مالي في الاستوديو وإدخال قيمته المستلمة، يتم تقسيم الإيراد تلقائياً بنسب صارمة لحماية الاستوديو وضمان حقوق الأعضاء:</p>
+                    <ul class="guide-list">
+                        <li><span class="guide-highlight">50% لفريق العمل المنفذ:</span> تُقسم بالتساوي على الأعضاء الذين تم تعيينهم للمشروع وتُودع مباشرة في حساباتهم القابلة للسحب.</li>
+                        <li><span class="guide-highlight">30% للصندوق التشغيلي (OpEx Fund):</span> صندوق مخصص لشراء وتطوير الأجهزة الفنية، صيانة الاستوديو، ودفع اشتراكات البرامج المدفوعة (مثل Figma, Adobe Suite, Midjourney).</li>
+                        <li><span class="guide-highlight">20% محفظة التكافل والمساهمة (Solidarity Pool):</span> وعاء مالي يُوزع بنهاية الفترة على الأعضاء النشطين الآخرين بناءً على نسب المساهمة المقررة.</li>
+                    </ul>
+                </div>
+
+                <!-- القسم الثاني: استبعاد المنفذين -->
+                <div class="guide-section">
+                    <h3 class="guide-title">
+                        <span>2. قاعدة عدم التداخل (Double-Dipping Exclusion)</span>
+                        <span class="guide-badge">هام</span>
+                    </h3>
+                    <p>لحماية حقوق بقية أعضاء الاستوديو وضمان توزيع عادل للثروة الفنية:</p>
+                    <p style="margin-bottom: 10px;">العضو الذي يشارك في تنفيذ مشروع ويستلم حصته من الـ (50% المباشرة)، <span class="guide-highlight">يُستبعد تماماً</span> من الحصول على أي نصيب من الـ (20% محفظة التكافل) الناتجة عن هذا المشروع بالذات. يتم توزيع هذه الـ 20% فقط على بقية الأعضاء الذين لم يعملوا في المشروع، بناءً على نسب مساهمتهم النسبية المقررة لهذا الشهر.</p>
+                </div>
+
+                <!-- القسم الثالث: نظام الترحيل للشهور الجافة -->
+                <div class="guide-section">
+                    <h3 class="guide-title">
+                        <span>3. نظام ترحيل نسب المساهمة (Unpaid Months Rollover)</span>
+                        <span class="guide-badge">رياضيات المنظومة</span>
+                    </h3>
+                    <p>إذا تم تحديد نسب مساهمة للأعضاء في شهر ما نظير مجهودات تنظيمية أو تدريبية عامة، ولم يكتمل أي مشروع مالي في ذلك الشهر (كانت المحفظة فارغة 0 دينار)، فإن حقوق الأعضاء لا تضيع!</p>
+                    <p>يقوم النظام بـ **ترحيل الشهور الجافة** ودمج نسبتها مع الشهور النشطة التي تليها عبر حساب المتوسط الحسابي للنسب:</p>
+                    
+                    <div class="formula-box">
+                        النسبة الفعلية المدمجة = (نسبة الشهر الأول الفارغ + نسبة الشهر الثاني النشط) / 2
+                    </div>
+
+                    <p>بعد إتمام الصرف المالي بناءً على هذه النسبة المدمجة، يعلم النظام الشهور التراكمية كـ "مدفوعة" ويصفّر العداد للبدء من جديد شهرياً بشكل طبيعي.</p>
+                </div>
+
+                <!-- القسم الرابع: المخططات والمهام الفرعية -->
+                <div class="guide-section">
+                    <h3 class="guide-title">
+                        <span>4. لوحة المهام وكانبان</span>
+                        <span class="guide-badge">تنسيق العمل</span>
+                    </h3>
+                    <p>يتم تنسيق العمل الفني عبر لوحة المخططات وبطاقات كانبان:</p>
+                    <ul class="guide-list">
+                        <li>يقوم الأدمن بإنشاء الفكرة في عمود **الأفكار والمسودات (Backlog)** وتعيين المنفذين لها.</li>
+                        <li>عند نقل المهمة لعمود **قيد التنفيذ (In Progress)**، يتاح للمنفذين الدخول إليها وإضافة المهام الفرعية (Subtasks) وإدارتها.</li>
+                        <li>بمجرد إنجاز المنفذين لجميع المهام الفرعية بنسبة 100%، تتحرك المهمة **تلقائياً** إلى عمود **المراجعة (Review)** لإشعار المدير.</li>
+                        <li>عند مراجعة العمل واستلام الدفعة المالية، ينقل الأدمن البطاقة لعمود **مكتمل ومستلم مالياً** وتوزيع الأرباح تلقائياً.</li>
+                    </ul>
+                </div>
+
+                <!-- القسم الخامس: التعليمات العامة -->
+                <div class="guide-section">
+                    <h3 class="guide-title">
+                        <span>5. قواعد عامة للاستوديو</span>
+                        <span class="guide-badge">تنبيهات</span>
+                    </h3>
+                    <ul class="guide-list">
+                        <li>تُحدد نسب المساهمة من قبل الأدمن في **بداية كل شهر** مع تدوين وصف للمبررات ليطلع عليها الجميع بشفافية.</li>
+                        <li>يجب على كل عضو تحديث **حالة توفره** يومياً لمساعدة الفريق في توزيع المشاريع القادمة.</li>
+                        <li>لكل مشروع نقاشه وغرفة دردشته المستقلة لتسهيل الرجوع للتفاصيل وحفظ المستندات الفنية.</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- التوست للإشعارات السريعة -->
+    <div class="toast-container"></div>
+
+    <script type="module" src="js/auth-guard.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - منظومة استوديو ارتياتك</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="login-body">
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            
+            <div class="login-header">
+                <div class="login-logo">A</div>
+                <h1 class="login-title">استوديو ارتياتك</h1>
+                <p class="login-subtitle">منظومة الإدارة المالية والتخطيط المتكاملة</p>
+            </div>
+
+            <form class="login-form" id="login-form" onsubmit="return false;">
+                
+                <div class="form-group">
+                    <label class="form-label" for="login-email">البريد الإلكتروني</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="example@gmail.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="login-password">كلمة المرور</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary login-btn" id="login-submit-btn">دخول للمنظومة</button>
+            </form>
+
+            <div class="login-footer">
+                <span>تواصل مع الإدارة للحصول على صلاحية الوصول</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- التوست للإشعارات السريعة -->
+    <div class="toast-container"></div>
+
+    <!-- استيراد ملفات الفايربيس ومنطق الدخول -->
+    <script type="module" src="js/auth-guard.js"></script>
+    <script type="module" src="js/login.js"></script>
+</body>
+</html>
