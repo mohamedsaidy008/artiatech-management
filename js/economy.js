@@ -22,6 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const opexExpenseForm = document.getElementById("opex-expense-form");
     const expenseAmountInput = document.getElementById("expense-amount");
     const expenseDescInput = document.getElementById("expense-desc");
+
+    const opexDepositForm = document.getElementById("opex-deposit-form");
+    const depositAmountInput = document.getElementById("deposit-amount");
+    const depositDescInput = document.getElementById("deposit-desc");
     
     const withdrawForm = document.getElementById("withdrawal-request-form");
     const withdrawAmountInput = document.getElementById("withdraw-amount");
@@ -204,6 +208,46 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // 7-ب. تسجيل إيداع يدوي في الصندوق التشغيلي
+    if (opexDepositForm) {
+        opexDepositForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(depositAmountInput.value);
+            const desc = depositDescInput.value.trim();
+
+            if (isNaN(amount) || amount <= 0 || !desc) {
+                showToast("يرجى إدخال قيم صحيحة!", "error");
+                return;
+            }
+
+            try {
+                const fundsSnapshot = await get(ref(db, "funds"));
+                const funds = fundsSnapshot.val() || { operating_fund: 0, solidarity_pool: 0 };
+                const currentOp = funds.operating_fund || 0;
+
+                const newOp = currentOp + amount;
+                await update(ref(db, "funds"), { operating_fund: newOp });
+
+                // إضافة معاملة مالية من نوع deposit للصندوق
+                const transactionRef = push(ref(db, "transactions"));
+                await set(transactionRef, {
+                    timestamp: Date.now(),
+                    actor: "الصندوق التشغيلي",
+                    type: "deposit_manual", // لتمييزه عن أرباح المشاريع
+                    amount: amount,
+                    desc: desc
+                });
+
+                showToast("تم تسجيل الإيداع اليدوي بنجاح!", "success");
+                logActivity(user.name, `سجّل إيداعاً يدوياً بقيمة [${amount} د.إ] في الصندوق التشغيلي ببيان: [${desc}]`);
+                opexDepositForm.reset();
+            } catch (err) {
+                console.error(err);
+                showToast("فشل تسجيل الإيداع!", "error");
+            }
+        });
+    }
+
     // 8. تقديم طلب سحب مالي (Withdrawal Request)
     if (withdrawForm) {
         withdrawForm.addEventListener("submit", async (e) => {
@@ -374,6 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (t.type === "withdraw") { badgeClass = "badge-withdraw"; typeText = "سحب نقدي"; }
             else if (t.type === "expense") { badgeClass = "badge-expense"; typeText = "مصروف تشغيلي"; }
             else if (t.type === "solidarity") { badgeClass = "badge-solidarity"; typeText = "صرف تكافلي"; }
+            else if (t.type === "deposit_manual") { badgeClass = "badge-deposit"; typeText = "إيداع يدوي"; }
 
             tr.innerHTML = `
                 <td style="color:var(--text-secondary); font-size:12px;">${new Date(t.timestamp).toLocaleDateString("ar-EG")}</td>

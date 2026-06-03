@@ -11,36 +11,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeCreateBtn = document.getElementById("close-create-task-btn");
     const cancelCreateBtn = document.getElementById("cancel-create-task-btn");
     const createTaskForm = document.getElementById("create-task-form");
-    
+
     const taskTitleInput = document.getElementById("task-title-input");
     const taskDescInput = document.getElementById("task-desc-input");
     const taskDeadlineInput = document.getElementById("task-deadline-input");
     const assigneesContainer = document.getElementById("assignees-checkboxes-container");
-    
+
     const taskDetailsModal = document.getElementById("task-details-modal");
     const closeDetailsBtn = document.getElementById("close-details-btn");
     const closeDetailsFooterBtn = document.getElementById("close-details-footer-btn");
-    
+
     const detailsTitle = document.getElementById("details-task-title");
     const detailsDesc = document.getElementById("details-task-desc");
     const detailsDeadline = document.getElementById("details-task-deadline");
     const detailsExecutors = document.getElementById("details-task-executors");
-    
+
     const subtasksContainer = document.getElementById("subtasks-container");
     const subtasksProgress = document.getElementById("subtasks-progress");
     const addSubtaskBox = document.getElementById("add-subtask-action-box");
     const newSubtaskTitleInput = document.getElementById("new-subtask-title");
     const saveSubtaskBtn = document.getElementById("save-subtask-btn");
-    
+
     const taskChatBox = document.getElementById("task-chat-box");
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
-    
+
     const payoutModal = document.getElementById("payout-modal");
     const closePayoutBtn = document.getElementById("close-payout-modal-btn");
     const cancelPayoutBtn = document.getElementById("cancel-payout-btn");
     const payoutForm = document.getElementById("payout-form");
     const payoutRevenueInput = document.getElementById("payout-revenue-input");
+
+    const deleteTaskBtn = document.getElementById("delete-task-btn");
 
     // الكانتينرز للأعمدة
     const containers = {
@@ -73,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const snap = await get(ref(db, "users"));
             allUsers = snap.val() || {};
-            
+
             if (assigneesContainer) {
                 assigneesContainer.innerHTML = "";
                 Object.keys(allUsers).forEach(id => {
@@ -100,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     openCreateModalBtn.addEventListener("click", () => {
         createTaskModal.classList.add("active");
     });
-    
+
     const closeCreateModal = () => {
         createTaskModal.classList.remove("active");
         createTaskForm.reset();
@@ -111,11 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. إضافة وحفظ المهمة الجديدة (للأدمن)
     createTaskForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         const title = taskTitleInput.value.trim();
         const desc = taskDescInput.value.trim();
         const deadline = taskDeadlineInput.value;
-        
+
         const checkedAssignees = Array.from(assigneesContainer.querySelectorAll(".assign-checkbox:checked")).map(cb => cb.value);
 
         if (!title || !desc || !deadline) {
@@ -141,10 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             await set(ref(db, `tasks/${taskId}`), newTask);
-            
+
             showToast(`تم إدراج فكرة [${title}] بنجاح!`, "success");
             logActivity(user.name, `أضاف مشروعاً جديداً للمخططات: [${title}]`);
-            
+
             // إشعار المنفذين
             checkedAssignees.forEach(uid => {
                 if (uid !== user.id) {
@@ -162,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 4. تحميل وعرض لوحة الكانبان في الوقت الفعلي
     onValue(ref(db, "tasks"), (snapshot) => {
         const tasks = snapshot.val();
-        
+
         // تصفير جميع الكانتينرز أولاً
         Object.keys(containers).forEach(status => {
             containers[status].innerHTML = "";
@@ -174,12 +176,12 @@ document.addEventListener("DOMContentLoaded", () => {
         Object.keys(tasks).forEach(id => {
             const task = tasks[id];
             const status = task.status || "backlog";
-            
+
             if (containers[status]) {
                 const card = document.createElement("div");
                 card.className = "task-card";
                 card.id = task.id;
-                
+
                 // تفعيل خاصية السحب للأدمن فقط
                 if (user.role === "admin") {
                     card.setAttribute("draggable", "true");
@@ -231,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (user.role === "admin") {
         Object.keys(containers).forEach(status => {
             const col = containers[status].parentElement;
-            
+
             col.addEventListener("dragover", (e) => {
                 e.preventDefault(); // السماح بالإفلات
             });
@@ -256,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // الانتقال العادي بين باقي الأعمدة
                     await update(taskRef, { status: status });
                     logActivity(user.name, `نقل المشروع [${taskData.title}] إلى عمود [${getColumnNameArabic(status)}]`);
-                    
+
                     // إشعار المنفذين بالانتقال
                     if (taskData.executors) {
                         taskData.executors.forEach(uid => {
@@ -292,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const taskRef = ref(db, `tasks/${pendingPayoutTaskId}`);
             const taskSnap = await get(taskRef);
             const taskData = taskSnap.val();
-            
+
             if (!taskData) {
                 showToast("حدث خطأ: المهمة غير موجودة!", "error");
                 closePayoutModal();
@@ -421,6 +423,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 addSubtaskBox.style.display = "none";
             }
 
+            // إظهار زر الحذف للأدمن فقط داخل التفاصيل
+            if (user.role === "admin") {
+                deleteTaskBtn.style.display = "block";
+            } else {
+                deleteTaskBtn.style.display = "none";
+            }
+
             // مستمع للمهام الفرعية
             initSubtaskListener(taskId, isExecutor, task.status);
 
@@ -436,7 +445,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeDetailsModal = () => {
         taskDetailsModal.classList.remove("active");
         activeTaskId = null;
-        
+
         // إزالة المستمعات لمنع التداخل عند فتح كرت آخر
         if (activeChatListener) {
             activeChatListener();
@@ -453,10 +462,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // 8. مستمع وإدارة المهام الفرعية (Subtasks Engine)
     const initSubtaskListener = (taskId, isExecutor, taskStatus) => {
         const subRef = ref(db, `tasks/${taskId}/subtasks`);
-        
+
         activeSubtaskListener = onValue(subRef, async (snapshot) => {
             const subtasks = snapshot.val();
-            
+
             if (!subtasks) {
                 subtasksContainer.innerHTML = `<div style="font-size:12px; color:var(--text-secondary); text-align:center; padding:10px;">لا توجد مهام فرعية بعد.</div>`;
                 subtasksProgress.textContent = "0%";
@@ -477,7 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
             subList.forEach(sub => {
                 const div = document.createElement("div");
                 div.className = "subtask-item";
-                
+
                 // تشيك بوكس معطل إذا لم يكن منفذاً أو المهمة مكتملة مالياً
                 const disabledAttr = (!isExecutor || taskStatus === "completed_paid") ? "disabled" : "";
 
@@ -492,7 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     checkbox.addEventListener("change", async () => {
                         const isChecked = checkbox.checked;
                         await update(ref(db, `tasks/${taskId}/subtasks/${sub.id}`), { completed: isChecked });
-                        
+
                         // تحديث النص محلياً
                         const text = document.getElementById(`sub-text-${sub.id}`);
                         if (isChecked) text.classList.add("completed");
@@ -525,7 +534,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 newSubtaskTitleInput.value = "";
                 showToast("تمت إضافة المهمة الفرعية.", "success");
-                
+
                 // تنبيه لإعادة فحص الحالة التلقائية (منعاً لبقاء المهمة في المراجعة إذا أضيفت مهام فرعية جديدة)
                 const taskRef = ref(db, `tasks/${activeTaskId}`);
                 const taskSnap = await get(taskRef);
@@ -558,7 +567,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 await update(taskRef, { status: "review" });
                 showToast(`🎉 رائـع! اكتملت كافة المهام الفرعية وتم نقل [${task.title}] تلقائياً إلى عمود المراجعة لإشعار الإدارة.`, "success");
                 logActivity("النظام التلقائي", `نقل المشروع [${task.title}] إلى عمود [المراجعة] لاكتمال المهام الفرعية`);
-                
+
                 // إشعار الإدارة (الأدمنز)
                 const usersSnap = await get(ref(db, "users"));
                 const users = usersSnap.val() || {};
@@ -578,10 +587,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // 9. مستمع النقاش المخصص للمشروع (Task-Specific Chats)
     const initChatListener = (taskId) => {
         const chatRef = ref(db, `discussions/${taskId}`);
-        
+
         activeChatListener = onValue(chatRef, (snapshot) => {
             const messages = snapshot.val();
-            
+
             if (!messages) {
                 taskChatBox.innerHTML = `<div class="noti-empty">لا توجد رسائل بعد، ابدأ النقاش!</div>`;
                 return;
@@ -590,14 +599,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const msgList = Object.keys(messages).map(key => ({
                 id: key,
                 ...messages[key]
-            })).sort((a,b) => a.timestamp - b.timestamp);
+            })).sort((a, b) => a.timestamp - b.timestamp);
 
             taskChatBox.innerHTML = "";
             msgList.forEach(msg => {
                 const isMyMsg = msg.senderId === user.id;
                 const bubble = document.createElement("div");
                 bubble.className = `msg-bubble ${isMyMsg ? 'my-msg' : ''}`;
-                
+
                 // زر الحذف لكاتب الرسالة أو للأدمن
                 const canDelete = isMyMsg || user.role === "admin";
                 const deleteHTML = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}">حذف 🗑️</button>` : "";
@@ -678,5 +687,35 @@ document.addEventListener("DOMContentLoaded", () => {
             completed_paid: "مكتمل ومستلم مالياً"
         };
         return names[status] || status;
+    }
+
+    // 10. حذف المهمة نهائياً (للأدمن فقط)
+    if (deleteTaskBtn) {
+        deleteTaskBtn.addEventListener("click", async () => {
+            if (!activeTaskId) return;
+
+            const confirmDelete = confirm("⚠️ هل أنت متأكد من حذف هذا المشروع نهائياً؟ سيتم مسح كافة البيانات والمهام الفرعية والنقاشات المرتبطة به ولا يمكن التراجع.");
+            if (!confirmDelete) return;
+
+            try {
+                const taskRef = ref(db, `tasks/${activeTaskId}`);
+                const taskSnap = await get(taskRef);
+                const taskData = taskSnap.val();
+
+                // 1. حذف المهمة نفسها
+                await remove(taskRef);
+
+                // 2. حذف غرف النقاش المرتبطة بها
+                await remove(ref(db, `discussions/${activeTaskId}`));
+
+                showToast(`تم حذف المشروع [${taskData ? taskData.title : ''}] وكل محتوياته بنجاح.`, "info");
+                logActivity(user.name, `حذف مشروعاً من المخططات: [${taskData ? taskData.title : activeTaskId}]`);
+
+                closeDetailsModal();
+            } catch (err) {
+                console.error(err);
+                showToast("فشل حذف المشروع!", "error");
+            }
+        });
     }
 });

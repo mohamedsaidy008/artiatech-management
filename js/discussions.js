@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const mainChatBody = document.getElementById("main-chat-body");
     const mainChatInput = document.getElementById("main-chat-input");
     const mainChatSendBtn = document.getElementById("main-chat-send-btn");
+    const projectSearchInput = document.getElementById("project-search-input");
 
     let allTasks = {};
     let selectedTaskId = null;
@@ -30,15 +31,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         projectChatsList.innerHTML = "";
-        
+
         // فرز المشاريع: النشطة أولاً ثم المكتملة
-        const sortedTaskIds = Object.keys(tasks).sort((a,b) => {
+        const sortedTaskIds = Object.keys(tasks).sort((a, b) => {
             const taskA = tasks[a];
             const taskB = tasks[b];
-            
+
             const aCompleted = taskA.status === "completed_paid";
             const bCompleted = taskB.status === "completed_paid";
-            
+
             if (aCompleted && !bCompleted) return 1;
             if (!aCompleted && bCompleted) return -1;
             return taskB.timestamp - taskA.timestamp;
@@ -109,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // تحديث هيدر الدردشة
     const updateChatHeader = (task) => {
         chatProjectTitle.textContent = task.title;
-        
+
         let statusText = "💡 مسودة";
         if (task.status === "in_progress") statusText = "⚙️ قيد التنفيذ";
         else if (task.status === "review") statusText = "🔍 قيد المراجعة";
@@ -122,10 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. ربط مستمع الرسائل الحية (Chat Window Listener)
     const initChatWindowListener = (taskId) => {
         const chatRef = ref(db, `discussions/${taskId}`);
-        
+
         activeChatListener = onValue(chatRef, (snapshot) => {
             const messages = snapshot.val();
-            
+
             if (!messages) {
                 mainChatBody.innerHTML = `
                     <div class="chat-empty-state">
@@ -140,15 +141,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const msgList = Object.keys(messages).map(key => ({
                 id: key,
                 ...messages[key]
-            })).sort((a,b) => a.timestamp - b.timestamp);
+            })).sort((a, b) => a.timestamp - b.timestamp);
 
             mainChatBody.innerHTML = "";
             msgList.forEach(msg => {
                 const isMyMsg = msg.senderId === user.id;
-                
+
                 const bubbleRow = document.createElement("div");
                 bubbleRow.className = `bubble-row ${isMyMsg ? 'my-bubble' : 'other-bubble'}`;
-                
+
                 const canDelete = isMyMsg || user.role === "admin";
                 const deleteHTML = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}" style="font-size:9px; padding:0 5px;">حذف 🗑️</button>` : "";
 
@@ -219,6 +220,23 @@ document.addEventListener("DOMContentLoaded", () => {
             if (e.key === "Enter") {
                 sendChatMessage();
             }
+        });
+    }
+
+    // 5. ميزة البحث وتصفية قائمة المشاريع
+    if (projectSearchInput) {
+        projectSearchInput.addEventListener("input", (e) => {
+            const term = e.target.value.trim().toLowerCase();
+            const items = projectChatsList.querySelectorAll(".project-chat-item");
+
+            items.forEach(item => {
+                const name = item.querySelector(".proj-chat-name").textContent.toLowerCase();
+                if (name.includes(term)) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
         });
     }
 });
