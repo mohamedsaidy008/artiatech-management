@@ -1,0 +1,99 @@
+/* تصميم صفحة تسجيل الدخول */
+.login-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(circle at top right, rgba(0, 242, 254, 0.15), transparent), 
+                radial-gradient(circle at bottom left, rgba(247, 181, 0, 0.1), transparent), 
+                var(--bg-color);
+}
+
+.login-wrapper {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.login-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* تأثير التوهج الخلفي للكرت */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.login-header {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 30px;
+}
+
+.login-logo {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-gold));
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0b0f19;
+    font-weight: 800;
+    font-size: 28px;
+    box-shadow: 0 8px 25px rgba(0, 242, 254, 0.3);
+    margin-bottom: 15px;
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    background: linear-gradient(45deg, var(--text-main), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.login-form {
+    position: relative;
+    z-index: 1;
+    text-align: right;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.login-footer {
+    margin-top: 25px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 1;
+}
